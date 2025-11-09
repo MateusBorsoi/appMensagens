@@ -1,28 +1,30 @@
-"use client";
-
-import useSession from "@/src/hooks/useSession";
-import DropDownUser from "../DropDownUser";
-import useAuth from "@/src/hooks/useAuth";
+import { Dot } from "lucide-react";
 import { TypographyP } from "../typography/TypographyP";
-import { TypographySmall } from "../typography/TypographySmall";
-import { TypographyH1 } from "../typography/TypographyH1";
+import AvatarChat from "./Avatar";
 
-const ChatHeader = () => {
-  const { session } = useSession();
-  const { logoutUser } = useAuth();
-
+const ChatHeader = ({
+  image,
+  nome,
+  status,
+}: {
+  nome: string;
+  image: string;
+  status: string;
+}) => {
   return (
-    <header className="h-[10%] border-b-2">
-      <div className="flex flex-row-reverse w-full h-full items-center justify-between pr-4">
-        <div className="flex items-center justify-center h-full">
-          <div className="flex flex-col justify-center mr-2 leading-tight text-right">
-            <TypographyP text={session.user.nome} className="text-typography font-semibold" />
-            <TypographySmall text={session.user.email} className="text-ring" />
+    <header className="h-[10%] bg-background flex flex-row items-center">
+      <div className="py-2 px-4 flex items-center">
+        <AvatarChat image="" nome="teste" />
+        <div className="flex flex-col px-4">
+          <TypographyP text={nome} />
+          <div className="flex flex-row-reverse justify-start items-center">
+            <TypographyP text={status} className="m-0 text-ring" />
+            {status === "online" ? (
+              <Dot className="text-green-400 -mr-5 -ml-6 -my-6" size={60} />
+            ) : (
+              <Dot size={60} className="m-0" />
+            )}
           </div>
-          <DropDownUser user={session.user} onLogout={logoutUser} />
-        </div>
-        <div className="flex items-start ml-4">
-          <TypographyH1 text="Mensagens" className="text-[20px] font-bold text-typography"/>
         </div>
       </div>
     </header>
