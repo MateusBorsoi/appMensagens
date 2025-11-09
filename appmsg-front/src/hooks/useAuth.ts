@@ -5,9 +5,14 @@ import { registerSchema } from "../validators/schemas/SchemaCadastro";
 import { cadastrarUsuario } from "../service/auth";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { useAppDispatch } from "../store/hooks";
+import { login, logout } from "../store/thunk/auth";
+import { LoginSchema } from "../validators/schemas/SchemaLogin";
 
 const useAuth = () => {
   const router = useRouter();
+  const appDispatch = useAppDispatch();
+
   const [showPass, setShowPass] = useState<{
     senha: boolean;
     confirmarSenha: boolean;
@@ -15,6 +20,7 @@ const useAuth = () => {
 
   const methodsLogin = useForm<Omit<Credenciais, "confirmaSenha" | "nome">>({
     defaultValues: { email: "", lembrar: false, senha: "" },
+    resolver: zodResolver(LoginSchema),
   });
 
   const methodsCadastro = useForm<Omit<Credenciais, "lembrar">>({
@@ -22,8 +28,23 @@ const useAuth = () => {
     resolver: zodResolver(registerSchema),
   });
 
-  function onSubmitLogin(data: Omit<Credenciais, "confirmaSenha" | "nome">) {
-    console.log(data);
+  async function onSubmitLogin(
+    data: Omit<Credenciais, "confirmaSenha" | "nome">
+  ) {
+    try {
+      await appDispatch(
+        login({
+          email: data.email,
+          lembrar: data.lembrar,
+          senha: data.senha,
+          async onSuccess() {
+            router.push("/");
+          },
+        })
+      );
+    } catch (err: any) {
+      toast.error("Falha ao realizar login, motivo:" + err.message);
+    }
   }
 
   async function onSubmitCadastro(data: Omit<Credenciais, "lembrar">) {
@@ -36,7 +57,20 @@ const useAuth = () => {
     }
   }
 
+  async function logoutUser() {
+    try {
+      await appDispatch(
+        logout(() => {
+          router.push("/auth/login");
+        })
+      );
+    } catch (err: any) {
+      toast.error("Falha ao realizar login, motivo:" + err.message);
+    }
+  }
+
   return {
+    logoutUser,
     methodsLogin,
     onSubmitLogin,
     showPass,

@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="pt-br" className={`${inter.variable} ${roboto.variable}`}>
       <body
-        className={`${inter.className} h-screen w-screen bg-gradient-to-r from-blue-400 to-emerald-400`}
+        className={`${inter.className} h-screen w-screen bg-radial from-sky-400 to-indigo-900`}
       >
         <Providers>{children}</Providers>
       </body>
