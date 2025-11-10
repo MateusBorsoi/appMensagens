@@ -1,3 +1,5 @@
+"use client";
+
 import useAuth from "@/src/hooks/useAuth";
 import { FormProvider } from "react-hook-form";
 import TextField from "../hookForm/TextField";
@@ -7,7 +9,10 @@ import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
 
 const FormLogin = () => {
   const { methodsLogin, onSubmitLogin, setShowPass, showPass } = useAuth();
-  const { handleSubmit } = methodsLogin;
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methodsLogin;
   return (
     <form onSubmit={handleSubmit(onSubmitLogin)}>
       <div className="flex flex-col justify-between h-full">
@@ -16,11 +21,13 @@ const FormLogin = () => {
             <TextField
               name="email"
               label="E-mail"
+              disabled={isSubmitting}
               leftIcon={<Mail size={20} />}
             />
             <TextField
               name="senha"
               label="Senha"
+              disabled={isSubmitting}
               className="mt-4"
               type={showPass.senha ? "text" : "password"}
               leftIcon={<Lock size={20} />}
@@ -53,13 +60,15 @@ const FormLogin = () => {
             <div className="mt-4 w-full flex flex-col">
               <CheckBox
                 name="lembrar"
+                disabled={isSubmitting}
                 label="Continuar conectado"
                 className="hover:cursor-pointer"
               />
               <Button
                 type="submit"
                 variant={"ghost"}
-                className="border border-ring rounded-2xl py-5 mt-8 hover:cursor-pointer mx-2"
+                disabled={isSubmitting}
+                className="border border-ring rounded-2xl py-5 mt-8 hover:cursor-pointer mx-2 hover:bg-secondary"
               >
                 Acessar
                 <ArrowRight size={20} />

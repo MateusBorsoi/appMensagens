@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { config } from "../config/env";
+import { JwtPayload, SocketComUsuario } from "../types/ISocket";
 
 export const authenticateToken = (
   req: Request,
@@ -22,5 +23,25 @@ export const authenticateToken = (
     next();
   } catch {
     return res.status(403).json({ message: "Token inválido ou expirado" });
+  }
+};
+
+export const socketAuthMiddleware = (
+  socket: SocketComUsuario,
+  next: (err?: Error) => void
+) => {
+  try {
+    const token =
+      socket.handshake.auth.token ||
+      socket.handshake.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return next(new Error("Token não fornecido"));
+    }
+    const decoded = jwt.verify(token, config.jwt.secret) as JwtPayload;
+    socket.usuario = decoded;
+    next();
+  } catch (error) {
+    next(new Error("Token inválido ou expirado"));
   }
 };

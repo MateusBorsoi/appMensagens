@@ -5,7 +5,7 @@ const getOptions = (config: AxiosRequestConfig): AxiosRequestConfig => {
     timeout: config.timeout ? config.timeout : 10000,
     baseURL: process.env.NEXT_PUBLIC_PROXY_BASE_PATH,
     headers: {
-      Authorization: "",
+      Authorization: config.headers?.Authorization,
       "Content-Type": "application/json",
       ...config.headers,
     },

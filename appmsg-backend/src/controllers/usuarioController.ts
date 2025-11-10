@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import Usuario from "../models/Usuario.js";
 import mongoose from "mongoose";
+import Mensagem from "../models/Mensagem.js";
+import { IUsuarioDocument } from "../types/IUsuario.js";
+import { JwtPayload } from "jsonwebtoken";
+import Chat from "../models/Chat.js";
 
 export const cadastrar = async (req: Request, res: Response) => {
   try {
@@ -122,6 +126,56 @@ export const deletar = async (req: Request, res: Response): Promise<void> => {
   } catch (erro) {
     res.status(500).json({
       erro: "Erro ao deletar usuário",
+      detalhes: erro instanceof Error ? erro.message : "Erro desconhecido",
+    });
+  }
+};
+
+export const listarChats = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.user as JwtPayload;
+
+    if (!id) {
+      return res.status(401).json({ erro: "Usuário não autenticado" });
+    }
+
+    const chats = await Chat.find({
+      participantes: id,
+    }).sort({ "ultimaMensagem.dataEnvio": -1 });
+
+    const chatsComDetalhes = await Promise.all(
+      chats.map(async (chat) => {
+        const outrosParticipantes = chat.participantes.filter(
+          (participanteId) => participanteId !== id
+        );
+
+        const usuarios = await Usuario.find({
+          _id: { $in: outrosParticipantes },
+        }).select("_id nome email dataCriacao");
+
+        const outroUsuario = usuarios[0];
+
+        return {
+          chatId: chat._id,
+          id: outroUsuario?._id,
+          nome: chat.tipo === "grupo" ? chat.nome : outroUsuario?.nome,
+          email: outroUsuario?.email,
+          dataCriacao: chat.dataCriacao,
+          tipo: chat.tipo,
+          participantes: usuarios.map((u) => ({
+            id: u._id,
+            nome: u.nome,
+            email: u.email,
+          })),
+          ultimaMensagem: chat.ultimaMensagem || null,
+        };
+      })
+    );
+
+    return res.json({ chats: chatsComDetalhes });
+  } catch (erro) {
+    return res.status(500).json({
+      erro: "Erro ao listar chats",
       detalhes: erro instanceof Error ? erro.message : "Erro desconhecido",
     });
   }

@@ -3,12 +3,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import UserAvatar from "./UserAvatar";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User as UserIcon } from "lucide-react";
+import { User } from "@/src/types/ISession";
 
 type Props = {
   onLogout: () => void;
@@ -22,10 +22,10 @@ const DropDownUser = ({ user, onLogout }: Props) => {
         <UserAvatar user={user} />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem className="hover:cursor-pointer flex justify-between">
-          Minha conta <User />
+        {/* <DropdownMenuItem className="hover:cursor-pointer flex justify-between">
+          Minha conta <UserIcon />
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator /> */}
         <DropdownMenuItem
           onClick={onLogout}
           variant="destructive"

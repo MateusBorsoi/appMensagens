@@ -7,22 +7,32 @@ import { ArrowRight, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 const FormCadastro = () => {
   const { methodsCadastro, onSubmitCadastro, setShowPass, showPass } =
     useAuth();
-  const { handleSubmit } = methodsCadastro;
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methodsCadastro;
   return (
     <form onSubmit={handleSubmit(onSubmitCadastro)}>
       <div className="flex flex-col justify-between h-auto">
         <FormProvider {...methodsCadastro}>
           <div className="flex flex-col pb-10 px-20  justify-between">
-            <TextField name="nome" label="Nome" leftIcon={<User size={20} />} />
+            <TextField
+              name="nome"
+              label="Nome"
+              leftIcon={<User size={20} />}
+              disabled={isSubmitting}
+            />
             <TextField
               name="email"
               label="E-mail"
+              disabled={isSubmitting}
               leftIcon={<Mail size={20} />}
               className="mt-4"
             />
             <TextField
               name="senha"
               label="Senha"
+              disabled={isSubmitting}
               className="mt-4"
               type={showPass.senha ? "text" : "password"}
               leftIcon={<Lock size={20} />}
@@ -55,6 +65,7 @@ const FormCadastro = () => {
             <TextField
               name="confirmaSenha"
               label="Confirmar senha"
+              disabled={isSubmitting}
               className="mt-4"
               type={showPass.confirmarSenha ? "text" : "password"}
               leftIcon={<Lock size={20} />}
@@ -86,9 +97,10 @@ const FormCadastro = () => {
             />
             <div className="mt-4 w-full flex flex-col">
               <Button
+                disabled={isSubmitting}
                 type="submit"
                 variant={"ghost"}
-                className="border border-ring rounded-2xl py-5 mt-8 hover:cursor-pointer mx-2"
+                className="border border-ring rounded-2xl py-5 mt-8 hover:cursor-pointer hover:bg-secondary mx-2"
               >
                 Enviar
                 <ArrowRight size={20} />

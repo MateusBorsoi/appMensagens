@@ -1,11 +1,17 @@
-"use client"
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SendHorizonal } from "lucide-react";
 import { useState } from "react";
 
-export function ChatInput({ onSend }: { onSend: (msg: string) => void }) {
+export function ChatInput({
+  onSend,
+  chat,
+}: {
+  onSend: (msg: string) => void;
+  chat: string;
+}) {
   const [message, setMessage] = useState("");
 
   const handleSend = () => {

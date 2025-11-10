@@ -6,8 +6,9 @@ import { cadastrarUsuario } from "../service/auth";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../store/hooks";
-import { login, logout } from "../store/thunk/auth";
 import { LoginSchema } from "../validators/schemas/SchemaLogin";
+import { login, logout } from "../store/slices/authSlice";
+import { persistor } from "../store/store";
 
 const useAuth = () => {
   const router = useRouter();
@@ -61,6 +62,7 @@ const useAuth = () => {
     try {
       await appDispatch(
         logout(() => {
+          persistor.purge();
           router.push("/auth/login");
         })
       );

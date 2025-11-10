@@ -9,4 +9,4 @@ const getSession = createSelector([getAuth], (session) => ({
   user: session.user,
 }));
 
-export { getSession };
+export { getSession, getAuth };

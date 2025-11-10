@@ -1,6 +1,6 @@
-import { Dot } from "lucide-react";
 import { TypographyP } from "../typography/TypographyP";
 import AvatarChat from "./Avatar";
+import { capitalize } from "lodash";
 
 const ChatHeader = ({
   image,
@@ -12,19 +12,19 @@ const ChatHeader = ({
   status: string;
 }) => {
   return (
-    <header className="h-[10%] bg-background flex flex-row items-center">
-      <div className="py-2 px-4 flex items-center">
-        <AvatarChat image="" nome="teste" />
-        <div className="flex flex-col px-4">
-          <TypographyP text={nome} />
-          <div className="flex flex-row-reverse justify-start items-center">
-            <TypographyP text={status} className="m-0 text-ring" />
-            {status === "online" ? (
-              <Dot className="text-green-400 -mr-5 -ml-6 -my-6" size={60} />
-            ) : (
-              <Dot size={60} className="m-0" />
-            )}
-          </div>
+    <header className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 bg-background">
+      <AvatarChat image={image} nome={nome} />
+      <div>
+        <TypographyP text={nome} />
+        <div className="flex items-center ">
+          <div
+            className={`h-2 w-2 ml-0.5 mr-1 rounded-full
+              ${status === "online" ? "bg-green-500 gap-0" : "bg-gray-400"}`}
+          />
+          <TypographyP
+            text={capitalize(status)}
+            className="text-xs text-ring leading-none"
+          />
         </div>
       </div>
     </header>

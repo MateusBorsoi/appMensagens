@@ -1,10 +1,6 @@
-type User = {
+export type User = {
   id: string;
   nome: string;
   email: string;
+  status: string;
 };
-
-interface Session {
-  token: string;
-  user: User;
-}

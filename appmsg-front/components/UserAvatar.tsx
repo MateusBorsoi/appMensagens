@@ -1,13 +1,22 @@
-import { memo } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { User } from "@/src/types/ISession";
 import { getInitials } from "@/src/utils/utils";
 
 const UserAvatar = ({ user }: { user: User }) => {
+  if (!user) {
+    return (
+      <Avatar className="h-10 w-10">
+        <AvatarFallback>?</AvatarFallback>
+      </Avatar>
+    );
+  }
+
   return (
-    <Avatar className="h-15 w-15">
-      <AvatarImage src="https://picsum.photos/200/300" alt="user" />
+    <Avatar className="h-10 w-10">
+      <AvatarImage src={"https://picsum.photos/200/300"} alt={user.nome} />
       <AvatarFallback>{getInitials(user.nome)}</AvatarFallback>
     </Avatar>
   );
 };
-export default memo(UserAvatar);
+
+export default UserAvatar;

@@ -1,27 +1,16 @@
 "use client";
-
 import { Provider } from "react-redux";
+import { persistor, store } from "../store/store";
 import { ToastContainer } from "react-toastify";
-import { store } from "../store/store";
-import { useEffect } from "react";
-import { restoreSession } from "../store/slices/authSlice";
+import { PersistGate } from "redux-persist/integration/react";
 
-const Providers = ({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) => {
-  useEffect(() => {
-    
-    store.dispatch(restoreSession());
-  }, []);
-
+export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
-      {children}
-      <ToastContainer position="top-center" />
+      <PersistGate loading={null} persistor={persistor}>
+        {children}
+        <ToastContainer position="top-center" />
+      </PersistGate>
     </Provider>
   );
-};
-
-export default Providers;
+}
