@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "next dev -p 8082",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "next start -p 8082",
+    "lint": "eslint",
+    "prod": "next build && next start -p 8082"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
