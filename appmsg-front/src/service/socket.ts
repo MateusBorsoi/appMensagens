@@ -44,7 +44,7 @@ async function registraSocket() {
     });
 
     socket.on("nova_mensagem", (mensagem: IMensagem) => {
-      store.dispatch(addUltimaMensagem(mensagem))
+      store.dispatch(addUltimaMensagem(mensagem));
       const chatAtual = store.getState().chat.chatAtual;
       if (chatAtual.chat.id === mensagem.chat) {
         store.dispatch(addMensagem(mensagem));

@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
-import Usuario from "../models/Usuario.js";
+import Usuario, { IUsuarioDoc } from "../models/Usuario.js";
 import mongoose from "mongoose";
-import Mensagem from "../models/Mensagem.js";
-import { IUsuarioDocument } from "../types/IUsuario.js";
 import { JwtPayload } from "jsonwebtoken";
 import Chat from "../models/Chat.js";
+import { IUsuarioDocument } from "../types/IUsuario.js";
 
 export const cadastrar = async (req: Request, res: Response) => {
   try {
@@ -139,40 +138,49 @@ export const listarChats = async (req: Request, res: Response) => {
       return res.status(401).json({ erro: "Usuário não autenticado" });
     }
 
+    // ✅ Buscar todos os usuários (exceto o logado)
+    const todosUsuarios = await Usuario.find({
+      _id: { $ne: id },
+    }).select("_id nome email dataCriacao");
+
     const chats = await Chat.find({
       participantes: id,
-    }).sort({ "ultimaMensagem.dataEnvio": -1 });
+    });
 
-    const chatsComDetalhes = await Promise.all(
-      chats.map(async (chat) => {
-        const outrosParticipantes = chat.participantes.filter(
-          (participanteId) => participanteId !== id
-        );
+    const chatsPorUsuario = new Map();
+    chats.forEach((chat) => {
+      const outroParticipante = chat.participantes.find((p) => p !== id);
+      if (outroParticipante) {
+        chatsPorUsuario.set(outroParticipante, chat);
+      }
+    });
 
-        const usuarios = await Usuario.find({
-          _id: { $in: outrosParticipantes },
-        }).select("_id nome email dataCriacao");
+    const listaCompleta = todosUsuarios.map((usuario) => {
+      const chat = chatsPorUsuario.get(usuario._id.toString());
 
-        const outroUsuario = usuarios[0];
+      return {
+        chatId: chat?._id || null,
+        id: usuario._id,
+        nome: usuario.nome,
+        email: usuario.email,
+        dataCriacao: usuario.dataCriacao,
+        tipo: chat?.tipo || null,
+        ultimaMensagem: chat?.ultimaMensagem || null,
+        temConversa: !!chat,
+        _dataOrdenacao: chat?.ultimaMensagem?.dataEnvio || new Date(0),
+      };
+    });
 
-        return {
-          chatId: chat._id,
-          id: outroUsuario?._id,
-          nome: chat.tipo === "grupo" ? chat.nome : outroUsuario?.nome,
-          email: outroUsuario?.email,
-          dataCriacao: chat.dataCriacao,
-          tipo: chat.tipo,
-          participantes: usuarios.map((u) => ({
-            id: u._id,
-            nome: u.nome,
-            email: u.email,
-          })),
-          ultimaMensagem: chat.ultimaMensagem || null,
-        };
-      })
-    );
+    listaCompleta.sort((a, b) => {
+      if (a.ultimaMensagem && !b.ultimaMensagem) return -1;
+      if (!a.ultimaMensagem && b.ultimaMensagem) return 1;
 
-    return res.json({ chats: chatsComDetalhes });
+      return b._dataOrdenacao.getTime() - a._dataOrdenacao.getTime();
+    });
+
+    const resultado = listaCompleta.map(({ _dataOrdenacao, ...item }) => item);
+
+    return res.json({ chats: resultado });
   } catch (erro) {
     return res.status(500).json({
       erro: "Erro ao listar chats",

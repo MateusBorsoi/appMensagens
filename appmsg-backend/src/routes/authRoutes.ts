@@ -5,4 +5,4 @@ const authRouter = Router();
 
 authRouter.post("/efetuarLogin", authController.login);
 
-export default authRouter
+export default authRouter;
